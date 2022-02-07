@@ -17,10 +17,12 @@ Additionally, if you need to render a different set of AVIs (such as a 360 video
 - Camera X offset
 - Camera X rotation
 - Camera Y rotation
-- Value of Ry for EquirectangularX.x
+- Value of Rx for EquirectangularX.x
 
 This script will work even if you have multiple camera keyframes -
 just make sure that all of them have X and Y rotation angles between -90 and 90.
+It will run for a while (it'll give you an estimate for the total time) and you won't be able
+to use your PC normally while it's doing its work, so it's a good idea to leave it overnight.
 
 ## License
 
