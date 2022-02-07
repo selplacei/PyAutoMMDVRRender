@@ -7,6 +7,8 @@ Since it requires rendering at least 8, usually 10, separate AVIs, it makes sens
 
 ## How to use it
 
+Make sure that Python 3 and PyAutoGUI are installed.
+
 Open a terminal and run `main.py` using Python. It'll give you a basic overview of what to do. 
 Make sure to adjust the config file according to your system and project configuration.
 
