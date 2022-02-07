@@ -86,6 +86,7 @@ def main():
 		exit()
 	pag.PAUSE = 0.2
 	for _ in range(4):
+		# Minimize (hopefully) all windows
 		minimize()
 		sleep(0.1)
 	for part in PARTS:
@@ -99,11 +100,11 @@ def main():
 		print(f'Rendering {part.suffix} started')
 		if part != PARTS[-1]:
 			# If this is the last render, my job is done
+			# Otherwise, automatically close the MMD instance
 			p = processes.pop(0)
 			Thread(target=timeout, args=(p, part.suffix)).start()
 			sleep(cfg.MMD_PART_WAIT)
-			sleep(1)
-		pag.PAUSE += 0.5
+		pag.PAUSE += 0.4  # Accomodate for potential lag from multiple running instances
 	print('Script finished')
 
 
@@ -141,7 +142,7 @@ def load_mmd():
 		pag.press('enter')
 		sleep(0.05)
 	pag.press('tab')
-	pag.write(cfg.PROJECT.split('/')[-1], interval=0.05)
+	pag.write(cfg.PROJECT.split('/')[-1], interval=0.02)
 	pag.press('enter')
 	sleep(cfg.MMD_PROJECT_WAIT)
 	refocus()
@@ -166,7 +167,7 @@ def adjust_camera(offset, rot_x, rot_y):
 
 def adjust_eqr(rx):
 	pag.click(x=cfg.EQUIRECTANGULAR_RX[0], y=cfg.EQUIRECTANGULAR_RX[1])
-	for _ in range(8):
+	for _ in range(5):
 		pag.press('delete')
 		pag.press('backspace')
 	pag.write(str(rx))
@@ -190,13 +191,15 @@ def render(output_suffix):
 		pag.press('enter')
 		sleep(0.05)
 	pag.press('tab')
-	pag.write(cfg.OUTPUT.split('/')[-1] + output_suffix + '.avi', interval=0.05)
+	pag.write(cfg.OUTPUT.split('/')[-1] + output_suffix + '.avi', interval=0.02)
 	pag.press('enter')
 	sleep(0.2)
 	# File selected, adjust AVI-out settings
 	pag.click(x=cfg.AVIOUT_FPS[0], y=cfg.AVIOUT_FPS[1])
 	pag.press('delete')
+	pag.press('backspace')
 	pag.press('delete')
+	pag.press('backspace')
 	pag.write(str(cfg.FPS))
 	pag.press('tab')
 	pag.write(str(cfg.RECORDING[0]))
