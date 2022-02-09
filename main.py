@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import datetime
 from time import sleep
 from threading import Thread
 import subprocess
@@ -12,19 +13,9 @@ class Part:
 	rot_x: int
 	rot_y: int
 	eqr_x: int
+	eqr_y: int
 
-PARTS = [
-	Part('L_TOP', -(cfg.PARALLAX / 2), -90, 0, -90),
-	Part('L_BOTTOM', -(cfg.PARALLAX / 2), 90, 0, 90),
-	Part('L_FRONT', -(cfg.PARALLAX / 2), 0, 0, 0),
-	Part('L_LEFT', -(cfg.PARALLAX / 2), 0, 90, 0),
-	Part('L_RIGHT', -(cfg.PARALLAX / 2), 0, -90, 0),
-	Part('R_TOP', cfg.PARALLAX / 2, -90, 0, -90),
-	Part('R_BOTTOM', cfg.PARALLAX / 2, 90, 0, 90),
-	Part('R_FRONT', cfg.PARALLAX / 2, 0, 0, 0),
-	Part('R_LEFT', cfg.PARALLAX / 2, 0, 90, 0),
-	Part('R_RIGHT', cfg.PARALLAX / 2, 0, -90, 0),
-]
+PARTS = [Part(*args) for args in cfg.PARTS]
 
 INTRO = f"""PyAutoMMDVRRender by selplacei
 This is a simple PyAutoGUI script.
@@ -57,21 +48,24 @@ you must do the following:
    - Camera position and angle
      * Do not manually apply any parallax
 	 * Make sure that all angles are within -90 to 90
-   - EquirectangularX.x values other than Rx
+   - EquirectangularX.x values other than Rx and Ry
    - Screen size
 7. Now make sure that whenever the project is launched,
    the "camera/light/accessory" model is selected
    along with its EquirectangularX.x accessory,
    and the project is ready to render.
+   Additionally, if you're using the viewpoint bone model,
+   make sure the camera is following it.
 8. Minimize all programs (except the terminal) before launching the script.
    Once the last AVI file has started to render,
    the script has done its job and you can use your PC as normal.
+   It may still be doing post-processing, however, so it may lag.
 
 This script doesn't attempt to deal with errors, so things may go south.
 To stop the script at any point, move the mouse to any corner of the screen.
+Estimated time to complete: {round(cfg.MMD_PART_WAIT * len(PARTS) // 60 / 60, 1)} hours
+Which will be at: {(datetime.datetime.now() + datetime.timedelta(seconds=(cfg.MMD_PART_WAIT * len(PARTS))).strftime('%c'))}
 
-Minimum time to complete: {round(cfg.MMD_PART_WAIT * len(PARTS) // 60 / 60, 1)} hours
-Maximum time to complete: {round(cfg.MMD_PART_TIMEOUT * len(PARTS) // 60 / 60, 1)} hours
 Press ENTER to start the script or Ctrl+C to exit."""
 
 processes = []
@@ -89,29 +83,30 @@ def main():
 		# Minimize (hopefully) all windows
 		minimize()
 		sleep(0.1)
-	for part in PARTS:
+	for n, part in enumerate(PARTS):
 		print(f'Starting {part.suffix}')
 		minimize()
 		load_mmd()
 		adjust_camera(part.offset, part.rot_x, part.rot_y)
-		adjust_eqr(part.eqr_x)
+		adjust_eqr(part.eqr_x, part.eqr_y)
 		sleep(1)
 		render(part.suffix)
 		print(f'Rendering {part.suffix} started')
-		if part != PARTS[-1]:
+		if n != -1:
 			# If this is the last render, my job is done
 			# Otherwise, automatically close the MMD instance
+			print(f'Next at {(datetime.datetime.now() + datetime.timedelta(seconds=cfg.MMD_PART_WAIT)).strftime("%c")}')
 			p = processes.pop(0)
-			Thread(target=timeout, args=(p, part.suffix)).start()
+			Thread(target=timeout, args=(p, part.suffix, n)).start()
 			sleep(cfg.MMD_PART_WAIT)
-		pag.PAUSE += 0.4  # Accomodate for potential lag from multiple running instances
 	print('Script finished')
 
 
-def timeout(p, name):
+def timeout(p, name, n):
 	sleep(cfg.MMD_PART_TIMEOUT)
 	p.terminate()
 	print(f'Terminating {name}')
+	cfg.post_process(n)
 
 
 def minimize():
@@ -165,12 +160,18 @@ def adjust_camera(offset, rot_x, rot_y):
 	pag.press('enter')
 
 
-def adjust_eqr(rx):
+def adjust_eqr(rx, ry):
 	pag.click(x=cfg.EQUIRECTANGULAR_RX[0], y=cfg.EQUIRECTANGULAR_RX[1])
 	for _ in range(5):
 		pag.press('delete')
 		pag.press('backspace')
 	pag.write(str(rx))
+	pag.press('enter')
+	pag.press('tab')
+	for _ in range(5):
+		pag.press('delete')
+		pag.press('backspace')
+	pag.write(str(ry))
 	pag.press('enter')
 	pag.click(x=cfg.EQUIRECTANGULAR_REGISTER[0], y=cfg.EQUIRECTANGULAR_REGISTER[1])
 	
