@@ -90,20 +90,41 @@ def main():
 		adjust_camera(part.offset, part.rot_x, part.rot_y)
 		adjust_eqr(part.eqr_x, part.eqr_y)
 		sleep(1)
-		render(part.suffix)
 		print(f'Rendering {part.suffix}')
-		if n != -1:
-			# If this is the last render, my job is done
-			# Otherwise, automatically close the MMD instance
-			process = processes.pop(0)
-			out = 'ecording'
-			while 'ecording' in out:
+		if cfg.SPLIT == 0:
+			render(part.suffix)
+			if n != -1:
+				# If this is the last render, my job is done
+				# Otherwise, automatically close the MMD instance
+				process = processes.pop(0)
+				out = 'ecording'
+				while 'ecording' in out:
+					sleep(30)
+					out = subprocess.Popen(['wmctrl', '-l'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].decode('utf-8')
 				sleep(30)
-				out, _ = subprocess.Popen(['wmctrl', '-l'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-			sleep(30)
+				print(f'Terminating {part.suffix}')
+				process.terminate()
+				cfg.post_process(n)
+		else:
+			start = cfg.RECORDING[0]
+			end = min(start + cfg.SPLIT, cfg.RECORDING[1])
+			i = 0
+			while end < cfg.RECORDING[1]:
+				refocus()
+				render(f'{part.suffix}_{i}', start, end)
+				out = 'ecording'
+				while 'ecording' in out:
+					sleep(30)
+					out = subprocess.Popen(['wmctrl', '-l'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].decode('utf-8')
+				sleep(30)
+				cfg.after_split(cfg.OUTPUT + f'{part.suffix}_{i}' + '.avi')
+				print(f'Split {i} done')
+				start = end + 1
+				end = min(start + cfg.SPLIT - 1, cfg.RECORDING[1])
+				i += 1
+			cfg.merge_splits(n)
 			print(f'Terminating {part.suffix}')
-			process.terminate()
-			cfg.post_process(n)
+			processes.pop(0).terminate()
 	print('Script finished')
 
 
@@ -153,6 +174,7 @@ def adjust_camera(offset, rot_x, rot_y):
 		pag.click(x=cfg.CAMERA_FOLLOW_BONE[0], y=cfg.CAMERA_FOLLOW_BONE[1])
 		pag.press('end')
 		if offset == 1:
+			sleep(1)
 			pag.click(x=cfg.CAMERA_FOLLOW_BONE[0], y=cfg.CAMERA_FOLLOW_BONE[1])
 			pag.press('up')
 		pag.click(x=cfg.CAMERA_REGISTER[0], y=cfg.CAMERA_REGISTER[1])
@@ -188,7 +210,7 @@ def adjust_eqr(rx, ry):
 	pag.click(x=cfg.EQUIRECTANGULAR_REGISTER[0], y=cfg.EQUIRECTANGULAR_REGISTER[1])
 	
 	
-def render(output_suffix):
+def render(output_suffix, start=None, end=None):
 	# Assume an opened MMD window in normal state
 	refocus()
 	pag.hotkey('alt', 'f')
@@ -215,15 +237,18 @@ def render(output_suffix):
 	pag.press('backspace')
 	pag.write(str(cfg.FPS))
 	pag.press('tab')
-	pag.write(str(cfg.RECORDING[0]))
+	pag.write(str(start or cfg.RECORDING[0]))
 	pag.press('tab')
-	pag.write(str(cfg.RECORDING[1]))
+	pag.write(str(end or cfg.RECORDING[1]))
 	pag.click(x=cfg.AVIOUT_CODEC[0], y=cfg.AVIOUT_CODEC[1])
-	pag.press('home')
-	pag.press('space')
-	for _ in range(cfg.CODEC_N - 1):
-		pag.press('down')
+	if cfg.CODEC_N == -1:
+		pag.press('end')
+	else:
+		pag.press('home')
 		pag.press('space')
+		for _ in range(cfg.CODEC_N - 1):
+			pag.press('down')
+			pag.press('space')
 	pag.press('enter')
 	pag.press('enter')
 

@@ -14,13 +14,12 @@ MINIMIZE_SHORTCUT = 'win', 'pagedown'
 LAUNCH_MMD = 'LANG=ja_JP.UTF-8 WINEPREFIX=~/.WineMMD64 WINEARCH=win64 wine PATH_TO_MMD_EXE_HERE'
 MMD_LAUNCH_WAIT = 10.0
 MMD_PROJECT_WAIT = 20.0
-MMD_PART_WAIT = 30 * 60  # How long to wait before starting another MMD instance
-MMD_PART_TIMEOUT = 30 * 60  # How long to wait until terminating an existing MMD instance
 
 ## Rendering ##
 FPS = 60
 RECORDING = 0, 8000  # Format as: (start, end)
-CODEC_N = 19  # First codec = 1
+SPLIT = 0  # 0 for no split
+CODEC_N = 19  # First codec = 1; -1 for AVI Raw
 
 ## Screen positions ##
 NOOP = 1700, 75  # Place on the MAIN window which focuses it, e.g. the red bar at the top
@@ -55,25 +54,10 @@ PARTS = [
 # the index of the last finished render (for example, according to the PARTS value provided above,
 # this function will be called with n = 4 as soon as L_RIGHT has finished rendering).
 # This can be useful, for example, to stitch parts before new parts are generated to save disk space.
-# Technical note: this will run in a different thread than the main script, so the timers for
-# starting a new MMD instance will work as normal. This means that you can run CPU-intensive tasks
-# in parallel with MMD renders. However, if you use a GPU-intensive task (such as stiching videos),
-# you'll likely not want a render to run at the same time. You can achieve this by setting
-# MMD_PART_WAIT to the sum of MMD_PART_TIMEOUT and the expected maximum time for post-processing
-# to complete, leaving some free room between renders. However, as this will leave the same long
-# break between each render, you may want to dynamically adjust MMD_PART_WAIT within this function.
-# When this function is called, the timer for MMD_PART_WAIT is already running and can't be changed;
-# if you change it within this function, it'll affect the next render.
 # The provided example uses ffmpeg to stitch the parts for each eye and convert the result to h246 mp4.
 def post_process(n):
 	#return
-	if n == 3:
-		# L_LEFT finished, so L_RIGHT is currently rendering
-		# Create a 30-minute break between L_RIGHT and R_TOP
-		MMD_PART_WAIT = 60 * 60
-	elif n == 4:
-		# L_RIGHT finished; make R_BOTTOM render right after R_TOP
-		MMD_PART_WAIT = 30 * 60
+	if n == 4:
 		# Stitch the left eye
 		import subprocess
 		import os
@@ -126,4 +110,16 @@ def post_process(n):
 				os.remove(OUTPUT + part[0] + '.avi')
 		# The video still needs sound added to it, which is beyond the scope of this function,
 		# so we'll leave stiching the two eyes up to the user as well
-		
+
+
+# This function is called after each split has been rendered (only if SPLIT > 0).
+# ``fp`` is the path to the most recent split.
+def after_split(fp):
+	return
+
+
+# This function is called after the last split for a given part has been rendered (only if SPLIT > 0).
+# It should call post_process() if necessary.
+# ``n`` is the index of ``PARTS`` that corresponds to the rendered part.
+def merge_splits(n):
+	return
