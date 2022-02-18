@@ -57,14 +57,14 @@ you must do the following:
    Additionally, if you're using the viewpoint bone model,
    make sure the camera is following it.
 8. Minimize all programs (except the terminal) before launching the script.
+   Additionally, make sure that there are no windows with the word "recording" in their title.
    Once the last AVI file has started to render,
    the script has done its job and you can use your PC as normal.
    It may still be doing post-processing, however, so it may lag.
 
 This script doesn't attempt to deal with errors, so things may go south.
 To stop the script at any point, move the mouse to any corner of the screen.
-Estimated time to complete: {round(cfg.MMD_PART_WAIT * len(PARTS) // 60 / 60, 1)} hours
-Which will be at: {(datetime.datetime.now() + datetime.timedelta(seconds=(cfg.MMD_PART_WAIT * len(PARTS))).strftime('%c'))}
+Will render {len(PARTS)} parts
 
 Press ENTER to start the script or Ctrl+C to exit."""
 
@@ -91,22 +91,20 @@ def main():
 		adjust_eqr(part.eqr_x, part.eqr_y)
 		sleep(1)
 		render(part.suffix)
-		print(f'Rendering {part.suffix} started')
+		print(f'Rendering {part.suffix}')
 		if n != -1:
 			# If this is the last render, my job is done
 			# Otherwise, automatically close the MMD instance
-			print(f'Next at {(datetime.datetime.now() + datetime.timedelta(seconds=cfg.MMD_PART_WAIT)).strftime("%c")}')
-			p = processes.pop(0)
-			Thread(target=timeout, args=(p, part.suffix, n)).start()
-			sleep(cfg.MMD_PART_WAIT)
+			process = processes.pop(0)
+			out = 'ecording'
+			while 'ecording' in out:
+				sleep(30)
+				out, _ = subprocess.Popen(['wmctrl', '-l'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+			sleep(30)
+			print(f'Terminating {part.suffix}')
+			process.terminate()
+			cfg.post_process(n)
 	print('Script finished')
-
-
-def timeout(p, name, n):
-	sleep(cfg.MMD_PART_TIMEOUT)
-	p.terminate()
-	print(f'Terminating {name}')
-	cfg.post_process(n)
 
 
 def minimize():
@@ -145,12 +143,26 @@ def load_mmd():
 
 def adjust_camera(offset, rot_x, rot_y):
 	# Assume an opened MMD window in normal state
+	if cfg.PARALLAX == -1:
+		pag.click(x=cfg.CAMERA_FOLLOW_BONE[0], y=cfg.CAMERA_FOLLOW_BONE[1])
+		pag.press('end')
+		sleep(1)
+		pag.click(x=cfg.CAMERA_FOLLOW_BONE[0], y=cfg.CAMERA_FOLLOW_BONE[1])
+		pag.press('end')
+		sleep(1)
+		pag.click(x=cfg.CAMERA_FOLLOW_BONE[0], y=cfg.CAMERA_FOLLOW_BONE[1])
+		pag.press('end')
+		if offset == 1:
+			pag.click(x=cfg.CAMERA_FOLLOW_BONE[0], y=cfg.CAMERA_FOLLOW_BONE[1])
+			pag.press('up')
+		pag.click(x=cfg.CAMERA_REGISTER[0], y=cfg.CAMERA_REGISTER[1])
 	pag.hotkey('alt', 'd')
 	pag.press('c')
 	pag.hotkey('alt', 'd')
 	pag.press('g')
 	pag.press('tab')
-	pag.write(str(offset))
+	if cfg.PARALLAX != -1:
+		pag.write(str(offset))
 	for _ in range(6):
 		pag.press('tab')
 	pag.write(str(rot_x))
@@ -208,8 +220,10 @@ def render(output_suffix):
 	pag.write(str(cfg.RECORDING[1]))
 	pag.click(x=cfg.AVIOUT_CODEC[0], y=cfg.AVIOUT_CODEC[1])
 	pag.press('home')
+	pag.press('space')
 	for _ in range(cfg.CODEC_N - 1):
 		pag.press('down')
+		pag.press('space')
 	pag.press('enter')
 	pag.press('enter')
 

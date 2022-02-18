@@ -36,16 +36,16 @@ AVIOUT_CODEC = 1125, 600
 # ('NAME', x_offset, camera_x_rotation, camera_y_rotation, equirectangularx_x_rotation, equirectangularx_y_rotation)
 # If you use the viewpoint bone: set x_offset to -1 for left eye, and 1 for right eye
 PARTS = [
-	('L_TOP', -(cfg.PARALLAX / 2), -90, 0, -90, 0),
-	('L_BOTTOM', -(cfg.PARALLAX / 2), 90, 0, 90, 0 ),
-	('L_FRONT', -(cfg.PARALLAX / 2), 0, 0, 0, 0),
-	('L_LEFT', -(cfg.PARALLAX / 2), 0, 90, 0, 0),
-	('L_RIGHT', -(cfg.PARALLAX / 2), 0, -90, 0, 0),
-	('R_TOP', cfg.PARALLAX / 2, -90, 0, -90, 0),
-	('R_BOTTOM', cfg.PARALLAX / 2, 90, 0, 90, 0),
-	('R_FRONT', cfg.PARALLAX / 2, 0, 0, 0, 0),
-	('R_LEFT', cfg.PARALLAX / 2, 0, 90, 0, 0),
-	('R_RIGHT', cfg.PARALLAX / 2, 0, -90, 0, 0),
+	('L_TOP', -(PARALLAX / 2), -90, 0, -90, 0),
+	('L_BOTTOM', -(PARALLAX / 2), 90, 0, 90, 0 ),
+	('L_FRONT', -(PARALLAX / 2), 0, 0, 0, 0),
+	('L_LEFT', -(PARALLAX / 2), 0, 90, 0, 0),
+	('L_RIGHT', -(PARALLAX / 2), 0, -90, 0, 0),
+	('R_TOP', PARALLAX / 2, -90, 0, -90, 0),
+	('R_BOTTOM', PARALLAX / 2, 90, 0, 90, 0),
+	('R_FRONT', PARALLAX / 2, 0, 0, 0, 0),
+	('R_LEFT', PARALLAX / 2, 0, 90, 0, 0),
+	('R_RIGHT', PARALLAX / 2, 0, -90, 0, 0),
 ]
 
 ## Post-processing ##
