@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import datetime
+import sys
 from time import sleep
 from threading import Thread
 import subprocess
@@ -72,12 +73,14 @@ processes = []
 
 
 def main():
-	print(INTRO)
-	try:
-		input()
-	except KeyboardInterrupt:
-		print('Rendering canceled.')
-		exit()
+	if '--start' not in sys.argv:
+		print(INTRO)
+		try:
+			input()
+		except KeyboardInterrupt:
+			print('Rendering canceled.')
+			exit()
+	start_time = datetime.datetime.now()
 	pag.PAUSE = 0.2
 	for _ in range(4):
 		# Minimize (hopefully) all windows
@@ -109,7 +112,7 @@ def main():
 			start = cfg.RECORDING[0]
 			end = min(start + cfg.SPLIT, cfg.RECORDING[1])
 			i = 0
-			while end < cfg.RECORDING[1]:
+			while start < end and end <= cfg.RECORDING[1]:
 				refocus()
 				render(f'{part.suffix}_{i}', start, end)
 				out = 'ecording'
@@ -125,7 +128,8 @@ def main():
 			cfg.merge_splits(n)
 			print(f'Terminating {part.suffix}')
 			processes.pop(0).terminate()
-	print('Script finished')
+	end_time = datetime.datetime.now()
+	print(f'Script finished at {end_time.strftime("%c")} (in {str(end_time - start time)})')
 
 
 def minimize():
@@ -200,8 +204,10 @@ def adjust_eqr(rx, ry):
 		pag.press('delete')
 		pag.press('backspace')
 	pag.write(str(rx))
-	pag.press('enter')
-	pag.press('tab')
+	pag.click(
+		x=((cfg.EQUIRECTANGULAR_RX[0] + cfg.EQUIRECTANGULAR_REGISTER[0]) // 2),
+		y=cfg.EQUIRECTANGULAR_RX[1]
+	)
 	for _ in range(5):
 		pag.press('delete')
 		pag.press('backspace')
