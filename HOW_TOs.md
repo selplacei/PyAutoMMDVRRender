@@ -16,7 +16,7 @@ To figure out how big the splits should be (for your system and project configur
 
 ### Speeding up rendering by eliminating the I/O bottleneck
 
-Since the amount of data written to the disk is so huge, disk I/O can end up being the main bottleneck for rendering speed. It can also deteriorate the disk health if you render videos all the time.
+Since the amount of data written to the disk is so huge, disk I/O can end up being the main bottleneck for rendering speed. It can also deteriorate the disk health if you render videos all the time. If you see that the first ~100 frames of your videos render really fast and then it slows down, disk I/O is likely your main bottleneck.
 
 To solve this, you can write the AVI files to RAM using tmpfs, and then just save the final stitched output to the hard drive. You can set this up as follows:
 
