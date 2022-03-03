@@ -102,9 +102,9 @@ def main():
 				process = processes.pop(0)
 				out = 'ecording'
 				while 'ecording' in out:
-					sleep(30)
+					sleep(5)
 					out = subprocess.Popen(['wmctrl', '-l'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].decode('utf-8')
-				sleep(30)
+				sleep(cfg.MMD_LAUNCH_WAIT // 2)
 				print(f'Terminating {part.suffix}')
 				process.terminate()
 				cfg.post_process(n)
@@ -117,9 +117,9 @@ def main():
 				render(f'{part.suffix}_{i}', start, end)
 				out = 'ecording'
 				while 'ecording' in out:
-					sleep(30)
+					sleep(5)
 					out = subprocess.Popen(['wmctrl', '-l'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].decode('utf-8')
-				sleep(30)
+				sleep(cfg.MMD_LAUNCH_WAIT // 2)
 				cfg.after_split(cfg.OUTPUT + f'{part.suffix}_{i}' + '.avi')
 				print(f'Split {i} done')
 				start = end + 1
@@ -129,7 +129,7 @@ def main():
 			print(f'Terminating {part.suffix}')
 			processes.pop(0).terminate()
 	end_time = datetime.datetime.now()
-	print(f'Script finished at {end_time.strftime("%c")} (in {str(end_time - start time)})')
+	print(f'Script finished at {end_time.strftime("%c")} (in {str(end_time - start_time)})')
 
 
 def minimize():
