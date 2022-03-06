@@ -36,6 +36,8 @@ Loading many clips and tracks into a single project makes my PC suffer, so I wil
 
 Add two video tracks, for a total of three:
 
+![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_22.jpg?raw=true)
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_7.jpg?raw=true)
 
 Put FRONT at the top, TOP below it, and BOTTOM below that:
