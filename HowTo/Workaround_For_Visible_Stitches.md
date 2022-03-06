@@ -95,3 +95,11 @@ Finally, make the RIGHT part visible by applying the `vr180mask_left.png` to LEF
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_21.jpg?raw=true)
 
 Add audio if necessary and now it should be ready to render. As a tip, if Kdenlive takes up a lot of RAM, you can press "Generate script" instead of "Render to file", save it, restart Kdenlive, press "Render" without loading a project, go to the "Scripts" tab, and render the script that was just created.
+
+### Assets used in this guide
+
+Stage by Xentetion: https://www.deviantart.com/xentetion/art/Circular-rainbow-Stage-xV1-837331614
+
+Model by Dotto: https://3d.nicovideo.jp/works/td41428
+
+Effects: AutoLuminous4, WorkingFloor, Ray-MMD, EquirectangularX
