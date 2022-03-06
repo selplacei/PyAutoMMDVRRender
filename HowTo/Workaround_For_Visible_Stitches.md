@@ -29,52 +29,69 @@ People have different methods for putting the 6 parts of a VR video together. So
 The following can be done in any reasonable video editing software - I will use Kdenlive as an example because I'm used to it and because it's free.
 
 Loading many clips and tracks into a single project makes my PC suffer, so I will first put together just the top, front, and bottom parts. First, import the clips:
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_5.jpg?raw=true)
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_6.jpg?raw=true)
 
 Add two video tracks, for a total of three:
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_7.jpg?raw=true)
 
 Put FRONT at the top, TOP below it, and BOTTOM below that:
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_8.jpg?raw=true)
 
 Add the "Shape Alpha (Mask)" effect to FRONT:
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_9.jpg?raw=true)
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_10.jpg?raw=true)
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_11.jpg?raw=true)
 
 Load the `vr180mask_front.png` mask:
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_12.jpg?raw=true)
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_13.jpg?raw=true)
 
 Do the same for TOP with the `vr180mask_top_big.png` mask:
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_14.jpg?raw=true)
 
 Since BOTTOM is the first layer, you don't have to do anything to it.
 
 Render the video - let's call it "TFB" (for Top, Front, Bottom):
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_15.jpg?raw=true)
 
 Now, start a new Kdenlive project. This is the one where magic happens.
 
 Import TFB, HALFLEFT, HALFRIGHT, LEFT, and RIGHT:
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_16.jpg?raw=true)
 
 Add 4 new video tracks for a total of five:
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_17.jpg?raw=true)
 
 Place the clips in the following order:
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_18.jpg?raw=true)
 
 Apply the masks `vr180mask_halfleft_gradient.png` and `vr180mask_halfright_gradient` to HALFLEFT and HALFRIGHT, respectively. Make sure that the three checkboxes on the right (Invert, Use Luma, Use Threshold) are unchecked (on both HALFLEFT and HALFRIGHT):
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_19.jpg?raw=true)
 
 We still haven't applied a mask to TFB, so you can't see the left and right parts properly. Now, since we're blurring and smoothing edges anyway, let's also smooth the transition to BOTTOM and TOP by using the `vr180mask_tfb_smaller_gradient.png` (rather than the one without a gradient):
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_20.jpg?raw=true)
 
 Once again, make sure the 3 checkboxes on the right are unchecked.
 
 Finally, make the RIGHT part visible by applying the `vr180mask_left.png` to LEFT:
+
 ![Screenshot](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/2_21.jpg?raw=true)
 
 Add audio if necessary and now it should be ready to render. As a tip, if Kdenlive takes up a lot of RAM, you can press "Generate script" instead of "Render to file", save it, restart Kdenlive, press "Render" without loading a project, go to the "Scripts" tab, and render the script that was just created.
