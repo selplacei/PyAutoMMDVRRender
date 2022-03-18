@@ -14,11 +14,11 @@ Once you've read them, feel free to edit this config according to your preferenc
 """
 import postprocessing
 
+
 # Do not edit the following value.
 # You can use it instead of any number in any PARTS value to keep the corresponding value
 # as what's already in the project, i.e., the script won't change it.
 NOCHANGE = object()
-
 
 ## Paths and filenames ##
 # All paths must be absolute and cannot contain characters that can't be typed on a keyboard
@@ -66,7 +66,7 @@ SPLIT = 500
 # The codec to use; set this to the position of the codec in the list shown by MMD
 # For example, to use the first codec, set this to 1
 # To use AVI Raw, set it to -1
-CODEC_N = 19
+CODEC_N = -1
 
 
 ## Screen positions ##

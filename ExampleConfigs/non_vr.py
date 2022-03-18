@@ -8,11 +8,11 @@ This config will not touch the camera angle, accessory coordinates, etc.
 """
 import postprocessing
 
+
 # Do not edit the following value.
 # You can use it instead of any number in any PARTS value to keep the corresponding value
-# of what's already in the project, i.e., the script won't change it.
+# as what's already in the project, i.e., the script won't change it.
 NOCHANGE = []
-
 
 ## Paths and filenames ##
 # All paths must be absolute and cannot contain characters that can't be typed on a keyboard
@@ -60,7 +60,7 @@ SPLIT = 500
 # The codec to use; set this to the position of the codec in the list shown by MMD
 # For example, to use the first codec, set this to 1
 # To use AVI Raw, set it to -1
-CODEC_N = 19
+CODEC_N = -1
 
 
 ## Screen positions ##
@@ -85,9 +85,6 @@ AVIOUT_CODEC = 1125, 600
 # Each part is formatted as follows:
 # ('NAME', x_offset, camera_x_rotation, camera_y_rotation, equirectangularx_x_rotation, equirectangularx_y_rotation)
 # If you use the viewpoint bone (i.e. PARALLAX = -1): set x_offset to -1 for left eye, and 1 for right eye
-# Or just change the LEFT and RIGHT values provided below
-LEFT = -1
-RIGHT = 1
 PARTS = [
 	('', NOCHANGE, NOCHANGE, NOCHANGE, NOCHANGE, NOCHANGE)
 ]
