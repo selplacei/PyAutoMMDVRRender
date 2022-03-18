@@ -1,23 +1,17 @@
 """
-Example configuration for PyAutoMMDVRRender
+Non-VR video example configuration for PyAutoMMDVRRender
 This example config will do the following:
 - Render the output 500 frames at a time using the AVI Raw codec
 - Immediately convert the rendered splits to .mp4
 - Automatically put the splits together when they're all rendered
-- Automatically stack eyes horizontally
-The final output consists of 5 .mp4 files, each corresponding to a rotation
-of the camera by 90°.
-Additionally, this config assumes that you're using the viwepoint bone model.
-
-The comments explain what each value does and how to edit it.
-Once you've read them, feel free to edit this config according to your preferences.
+This config will not touch the camera angle, accessory coordinates, etc.
 """
 import postprocessing
 
 # Do not edit the following value.
 # You can use it instead of any number in any PARTS value to keep the corresponding value
-# as what's already in the project, i.e., the script won't change it.
-NOCHANGE = object()
+# of what's already in the project, i.e., the script won't change it.
+NOCHANGE = []
 
 
 ## Paths and filenames ##
@@ -81,8 +75,8 @@ CODEC_N = 19
 NOOP = 1700, 75  # Place on the main (editor) window which focuses it, e.g. the red bar at the top
 CAMERA_FOLLOW_BONE = 505, 515  # Not necessary unless PARALLAX = -1
 CAMERA_REGISTER = 540, 515  # Not necessary unless PARALLAX = -1
-EQUIRECTANGULAR_RX = 975, 490
-EQUIRECTANGULAR_REGISTER = 1100, 510
+EQUIRECTANGULAR_RX = 975, 490  # Not used in this example config
+EQUIRECTANGULAR_REGISTER = 1100, 510  # Not used in this example config
 AVIOUT_FPS = 930, 450
 AVIOUT_CODEC = 1125, 600
 
@@ -95,38 +89,13 @@ AVIOUT_CODEC = 1125, 600
 LEFT = -1
 RIGHT = 1
 PARTS = [
-	('L_FRONT', LEFT, NOCHANGE, NOCHANGE, 0, 0),
-	('R_FRONT', RIGHT, NOCHANGE, NOCHANGE, 0, 0),
-	('L_TOP', LEFT, -90, NOCHANGE, -90, 0),
-	('R_TOP', RIGHT, -90, NOCHANGE, -90, 0),
-	('L_BOTTOM', LEFT, 90, NOCHANGE, 90, 0),
-	('R_BOTTOM', RIGHT, 90, NOCHANGE, 90, 0),
-	('L_LEFT', LEFT, NOCHANGE, 90, 0, -90),
-	('R_LEFT', RIGHT, NOCHANGE, 90, 0, -90),
-	('L_RIGHT', LEFT, NOCHANGE, -90, 0, 90),
-	('R_RIGHT', RIGHT, NOCHANGE, -90, 0, 90),
-	
-	# The following are the 4 half-parts used in the "remove visible stitches" trick
-	# Remove the # signs below to enable them
-	#('L_HALFLEFT', LEFT, 0, 45, 0, -45),
-	#('R_HALFLEFT', RIGHT, 0, 45, 0, -45),
-	#('L_HALFRIGHT', LEFT, 0, -45, 0, 45),
-	#('R_HALFRIGHT', RIGHT, 0, -45, 0, 45)
+	('', NOCHANGE, NOCHANGE, NOCHANGE, NOCHANGE, NOCHANGE)
 ]
 
 
 ## Post-processing ##
 def post_process(n):
-	# This function is called every time an MMD instance is terminated (which, hopefully,
-	# means that a part has just finished rendering). Its only argument is an integer indicating
-	# the index of the last finished render (for example, according to the PARTS value provided,
-	# this function will be called with n = 4 as soon as L_BOTTOM has finished rendering).
-	if n % 2 == 1:
-		postprocessing.stack_eyes(
-			OUTPUT + PARTS[n - 1][0] + '.mp4',
-			OUTPUT + PARTS[n][0] + '.mp4',
-			(FINAL_OUTPUT + PARTS[n][0] + '.mp4').replace('R_', 'ALL_')
-		)
+	return
 
 
 split_files = []
@@ -141,5 +110,4 @@ def merge_splits(n):
 	# This function is called after the last split for a given part was rendered (only if SPLIT > 0).
 	# It should call post_process() if necessary.
 	# ``n`` is the index of ``PARTS`` that corresponds to the rendered part.
-	if postprocessing.concat_splits(OUTPUT + PARTS[n][0] + '.mp4'):
-		post_process(n)
+	postprocessing.concat_splits(OUTPUT + PARTS[n][0] + '.mp4')

@@ -168,7 +168,7 @@ def load_mmd():
 
 def adjust_camera(offset, rot_x, rot_y):
 	# Assume an opened MMD window in normal state
-	if cfg.PARALLAX == -1:
+	if cfg.PARALLAX == -1 and offset is not cfg.NOCHANGE:
 		pag.click(x=cfg.CAMERA_FOLLOW_BONE[0], y=cfg.CAMERA_FOLLOW_BONE[1])
 		pag.press('end')
 		sleep(1)
@@ -182,36 +182,44 @@ def adjust_camera(offset, rot_x, rot_y):
 			pag.click(x=cfg.CAMERA_FOLLOW_BONE[0], y=cfg.CAMERA_FOLLOW_BONE[1])
 			pag.press('up')
 		pag.click(x=cfg.CAMERA_REGISTER[0], y=cfg.CAMERA_REGISTER[1])
+	if (cfg.PARALLAX == -1 or offset is cfg.NOCHANGE) and rot_x is cfg.NOCHANGE and rot_y is cfg.NOCHANGE:
+		return
 	pag.hotkey('alt', 'd')
 	pag.press('c')
 	pag.hotkey('alt', 'd')
 	pag.press('g')
 	pag.press('tab')
-	if cfg.PARALLAX != -1:
+	if cfg.PARALLAX != -1 and offset is not cfg.NOCHANGE:
 		pag.write(str(offset))
 	for _ in range(6):
 		pag.press('tab')
-	pag.write(str(rot_x))
+	if rot_x is not cfg.NOCHANGE:
+		pag.write(str(rot_x))
 	pag.press('tab')
 	pag.press('tab')
-	pag.write(str(rot_y))
+	if rot_y is not cfg.NOCHANGE:
+		pag.write(str(rot_y))
 	pag.press('enter')
 
 
 def adjust_eqr(rx, ry):
-	pag.click(x=cfg.EQUIRECTANGULAR_RX[0], y=cfg.EQUIRECTANGULAR_RX[1])
-	for _ in range(5):
-		pag.press('delete')
-		pag.press('backspace')
-	pag.write(str(rx))
-	pag.click(
-		x=((cfg.EQUIRECTANGULAR_RX[0] + cfg.EQUIRECTANGULAR_REGISTER[0]) // 2),
-		y=cfg.EQUIRECTANGULAR_RX[1]
-	)
-	for _ in range(5):
-		pag.press('delete')
-		pag.press('backspace')
-	pag.write(str(ry))
+	if rx is cfg.NOCHANGE and ry is cfg.NOCHANGE:
+		return
+	if rx is not cfg.NOCHANGE:
+		pag.click(x=cfg.EQUIRECTANGULAR_RX[0], y=cfg.EQUIRECTANGULAR_RX[1])
+		for _ in range(5):
+			pag.press('delete')
+			pag.press('backspace')
+		pag.write(str(rx))
+	if ry is not cfg.NOCHANGE:
+		pag.click(
+			x=((cfg.EQUIRECTANGULAR_RX[0] + cfg.EQUIRECTANGULAR_REGISTER[0]) // 2),
+			y=cfg.EQUIRECTANGULAR_RX[1]
+		)
+		for _ in range(5):
+			pag.press('delete')
+			pag.press('backspace')
+		pag.write(str(ry))
 	pag.press('enter')
 	pag.click(x=cfg.EQUIRECTANGULAR_REGISTER[0], y=cfg.EQUIRECTANGULAR_REGISTER[1])
 	
