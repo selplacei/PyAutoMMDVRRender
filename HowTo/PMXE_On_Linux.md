@@ -19,3 +19,26 @@ Trying to use PMXE on Linux will give errors, at least when using the default Wi
 - Install dxvk: choose "Install a Windows DLL or component", then scroll down and check ``dxvk`` (without any extra numbers attached), and press OK until it comes back to the previous screen.
 - Install Japanese fonts: choose "Install a font", then choose the desired font(s) - for reliability, I suggest ``cjkfonts``. Click "OK" until it's done, then close protontricks.
 - At this point, you should be able to launch PMXE from Steam without any problem.
+
+## Giving PMXE access to the filesystem
+
+By default, Steam's security settings prevent Steam Play applications from seeing your main filesystem, which almost certainly includes all your MMD files. To fix this, you will need to set an environment variable to launch Steam with. First, figure out which folders PMXE will need to access; mine are all under ``/home/selplacei``, so I will give PMXE access to that whole directory. (Note that you cannot just set ``/`` as the directory for various reasons, including even more security measures by Steam. However, you can use ``/mnt``). The environment variable in question is ``STEAM_COMPAT_MOUNTS`` - simply set it to the path, i.e. ``/home/selplacei`` in this case.
+
+There are many ways to do this. The simplest one is to just launch Steam from the terminal using ``STEAM_COMPAT_MOUNTS=/home/selplacei steam``. You can also edit Steam's .desktop file (usually in /usr/share/applications) - this will enable such access to all Proton applications at all times, so be careful. Another way is to add ``export STEAM_COMPAT_MOUNTS=/home/selplacei`` to your ``~/.profile``, which will also give access to all Proton applications at all times. Finally, if you're really concerned about security, you can duplicate Steam's .desktop file, put it in ``~/.local/share/applications``, add the environment variable to it, and prefix the command with ``killall steam && `` - then use this whenever you need PMXE.
+
+## Fixing scaling issues
+
+In certain cases, imperfect scaling mechanisms result in some elements of the PMXE gui being invisible; for example:
+
+![Text boxes and labels overflow their widget area.](https://github.com/selplacei/PyAutoMMDVRRender/blob/main/HowTo/img/4_1.jpg?raw=true)
+
+This issue can be solved by editing the ``HKEY_CURRENT_USER/Control Panel/Desktop`` registry value. For example, using protontricks:
+
+- Open protontricks and choose PMXE's prefix.
+- Go to "Choose default wineprefix", then "Run regedit".
+- Navigate to ``HKEY_CURRENT_USER/Control Panel/Desktop`` (click on the Desktop folder itself).
+- Double-click ``LogPixels``.
+- Change the value to something lower - for me, 57 works fine. Keep in mind that this number is hexadecimal.
+- Click "OK" and close protontricks along with regedit.
+
+This value can technically be changed in winecfg, but that only allows increasing it, while we want the opposite.
