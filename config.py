@@ -80,7 +80,8 @@ CODEC_N = -1
 # and the preview/position editing window takes up the bottom half
 NOOP = 1700, 75  # Place on the main (editor) window which focuses it, e.g. the red bar at the top
 CAMERA_FOLLOW_BONE = 505, 515  # Not necessary unless PARALLAX = -1
-CAMERA_REGISTER = 540, 515  # Not necessary unless PARALLAX = -1
+CAMERA_ANGLE = 550, 430
+CAMERA_REGISTER = 540, 515 # Not necessary unless PARALLAX = -1 or camera angle is changed
 EQUIRECTANGULAR_RX = 975, 490
 EQUIRECTANGULAR_REGISTER = 1100, 510
 AVIOUT_FPS = 930, 450
@@ -95,12 +96,12 @@ AVIOUT_CODEC = 1125, 600
 LEFT = -1
 RIGHT = 1
 PARTS = [
-	('L_FRONT', LEFT, NOCHANGE, NOCHANGE, 0, 0),
-	('R_FRONT', RIGHT, NOCHANGE, NOCHANGE, 0, 0),
-	('L_TOP', LEFT, -90, NOCHANGE, -90, 0),
-	('R_TOP', RIGHT, -90, NOCHANGE, -90, 0),
-	('L_BOTTOM', LEFT, 90, NOCHANGE, 90, 0),
-	('R_BOTTOM', RIGHT, 90, NOCHANGE, 90, 0),
+	('L_FRONT', LEFT, NOCHANGE, NOCHANGE, 0, 0, 90),
+	('R_FRONT', RIGHT, NOCHANGE, NOCHANGE, 0, 0, 90),
+	('L_TOP', LEFT, -90, NOCHANGE, -90, 0, 96),
+	('R_TOP', RIGHT, -90, NOCHANGE, -90, 0, 96),
+	('L_BOTTOM', LEFT, 90, NOCHANGE, 90, 0, 96),
+	('R_BOTTOM', RIGHT, 90, NOCHANGE, 90, 0, 96),
 	('L_LEFT', LEFT, NOCHANGE, 90, 0, -90),
 	('R_LEFT', RIGHT, NOCHANGE, 90, 0, -90),
 	('L_RIGHT', LEFT, NOCHANGE, -90, 0, 90),

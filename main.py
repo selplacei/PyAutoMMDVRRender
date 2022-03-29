@@ -15,6 +15,7 @@ class Part:
 	rot_y: int
 	eqr_x: int
 	eqr_y: int
+	angle: int = cfg.NOCHANGE
 
 PARTS = [Part(*args) for args in cfg.PARTS]
 
@@ -90,7 +91,7 @@ def main():
 		print(f'Starting {part.suffix}')
 		minimize()
 		load_mmd()
-		adjust_camera(part.offset, part.rot_x, part.rot_y)
+		adjust_camera(part.offset, part.rot_x, part.rot_y, part.angle)
 		adjust_eqr(part.eqr_x, part.eqr_y)
 		sleep(1)
 		print(f'Rendering {part.suffix}')
@@ -154,11 +155,12 @@ def load_mmd():
 	pag.press('down')
 	pag.press('end')
 	pag.press('enter')
+	sleep(2)
 	pag.press('tab')
 	for subdir in cfg.PROJECT.split('/')[:-1]:
-		pag.write(subdir, interval=0.02)
+		pag.write(subdir, interval=0.04)
 		pag.press('enter')
-		sleep(0.05)
+		sleep(0.2)
 	pag.press('tab')
 	pag.write(cfg.PROJECT.split('/')[-1], interval=0.02)
 	pag.press('enter')
@@ -166,7 +168,7 @@ def load_mmd():
 	refocus()
 
 
-def adjust_camera(offset, rot_x, rot_y):
+def adjust_camera(offset, rot_x, rot_y, angle):
 	# Assume an opened MMD window in normal state
 	if cfg.PARALLAX == -1 and offset is not cfg.NOCHANGE:
 		pag.click(x=cfg.CAMERA_FOLLOW_BONE[0], y=cfg.CAMERA_FOLLOW_BONE[1])
@@ -182,7 +184,16 @@ def adjust_camera(offset, rot_x, rot_y):
 			pag.click(x=cfg.CAMERA_FOLLOW_BONE[0], y=cfg.CAMERA_FOLLOW_BONE[1])
 			pag.press('up')
 		pag.click(x=cfg.CAMERA_REGISTER[0], y=cfg.CAMERA_REGISTER[1])
+	if angle is not cfg.NOCHANGE:
+		pag.click(x=cfg.CAMERA_ANGLE[0], y=cfg.CAMERA_ANGLE[1])
+		for _ in range(3):
+			pag.press('delete')
+			pag.press('backspace')
+		pag.write(str(angle))
+		pag.press('enter')
+		pag.click(x=cfg.CAMERA_REGISTER[0], y=cfg.CAMERA_REGISTER[1])
 	if (cfg.PARALLAX == -1 or offset is cfg.NOCHANGE) and rot_x is cfg.NOCHANGE and rot_y is cfg.NOCHANGE:
+		# Nothing to do in the "multiply all camera frame" window, we're done
 		return
 	pag.hotkey('alt', 'd')
 	pag.press('c')
@@ -234,11 +245,12 @@ def render(output_suffix, start=None, end=None):
 	pag.press('down')
 	pag.press('end')
 	pag.press('enter')
+	sleep(1)
 	pag.press('tab')
 	for subdir in cfg.OUTPUT.split('/')[:-1]:
-		pag.write(subdir, interval=0.02)
+		pag.write(subdir, interval=0.04)
 		pag.press('enter')
-		sleep(0.05)
+		sleep(0.2)
 	pag.press('tab')
 	pag.write(cfg.OUTPUT.split('/')[-1] + output_suffix + '.avi', interval=0.02)
 	pag.press('enter')
