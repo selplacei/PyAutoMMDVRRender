@@ -34,6 +34,7 @@ Choose a window manager - I use KWin normally, so that's also what I will use he
 1. Install `Xvfb`. On Arch Linux, this is in the `xorg-server-xvfb` package, which should already be installed if you have Xorg.
    Optionally, also install `x11vnc` and `tigervnc` (provides the `vncviewer` command) to be able to view what's happening.
 2. Use the following script (saved as `render.sh` in this repo):
+
 	#!/usr/bin/env sh
 	export DISPLAY=":1"
 	Xvfb :1 -screen 0 1920x1080x24 &
@@ -44,6 +45,7 @@ Choose a window manager - I use KWin normally, so that's also what I will use he
 	fi
 	python PyAutoMMDVRRender/main.py --start
 	killall Xvfb
+	
   Adjust this script according to your configuration, specifically:
   - The screen resolution should be the same as the monitor MMD normally launches on.
     MMD will remember its precise geometry, so you don't have to subtract taskbars and such from the screen resolution.
