@@ -35,7 +35,8 @@ Choose a window manager - I use KWin normally, so that's also what I will use he
    Optionally, also install `x11vnc` and `tigervnc` (provides the `vncviewer` command) to be able to view what's happening.
 2. Use the following script (saved as `render.sh` in this repo):
 
-	#!/usr/bin/env sh
+    ```
+    #!/usr/bin/env sh
 	export DISPLAY=":1"
 	Xvfb :1 -screen 0 1920x1080x24 &
 	kwin_x11 &
@@ -45,6 +46,7 @@ Choose a window manager - I use KWin normally, so that's also what I will use he
 	fi
 	python PyAutoMMDVRRender/main.py --start
 	killall Xvfb
+	```
 	
   Adjust this script according to your configuration, specifically:
   - The screen resolution should be the same as the monitor MMD normally launches on.
