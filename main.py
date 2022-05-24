@@ -101,6 +101,7 @@ def main():
 				# If this is the last render, my job is done
 				# Otherwise, automatically close the MMD instance
 				process = processes.pop(0)
+				sleep(cfg.MMD_LAUNCH_WAIT)
 				out = 'ecording'
 				while 'ecording' in out:
 					sleep(5)
@@ -116,6 +117,7 @@ def main():
 			while start < end and end <= cfg.RECORDING[1]:
 				refocus()
 				render(f'{part.suffix}_{i}', start, end)
+				sleep(cfg.MMD_LAUNCH_WAIT)
 				out = 'ecording'
 				while 'ecording' in out:
 					sleep(5)
@@ -254,7 +256,7 @@ def render(output_suffix, start=None, end=None):
 	pag.press('tab')
 	pag.write(cfg.OUTPUT.split('/')[-1] + output_suffix + '.avi', interval=0.02)
 	pag.press('enter')
-	sleep(0.2)
+	sleep(5)
 	# File selected, adjust AVI-out settings
 	pag.click(x=cfg.AVIOUT_FPS[0], y=cfg.AVIOUT_FPS[1])
 	pag.press('delete')

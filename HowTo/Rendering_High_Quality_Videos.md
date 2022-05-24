@@ -24,3 +24,33 @@ To solve this, you can write the AVI files to RAM using tmpfs, and then just sav
 2. Create a tmpfs of that size. Don't use /tmp (or other default directories) unless you're sure they have enough space allocated.
 3. Set up the SPLIT variable so that a single split can fit into the tmpfs.
 4. Adjust `after_split()`, `merge_splits()`, and `post_process()` so that the AVI files are deleted immediately after being re-encoded and so that the final output is saved to a permanent location. If you're using the default configuration, all you have to do is set OUTPUT inside the tmpfs and FINAL_OUTPUT to a permanent location.
+
+### Rendering while using the PC normally
+
+Unless you want to render overnight, which wastes electricity, makes your room warmer, and only allows one render per day (come on, you don't stamp out mediocre content like a factory?), it is useful to render MMD videos while being able to use the PC as normal. We can do this using a dummy X11 display with its own keyboard and mouse input. Good luck doing that on Windows.
+
+Choose a window manager - I use KWin normally, so that's also what I will use here. The window manager should be compatible with `wmctrl` and allow MMD windows to set their own geometry. In other words, when you launch MMD, its windows should have the same size and position as when you exited it. This wasn't the case with OpenBox but YMMV.
+
+1. Install `Xvfb`. On Arch Linux, this is in the `xorg-server-xvfb` package, which should already be installed if you have Xorg.
+   Optionally, also install `x11vnc` and `tigervnc` (provides the `vncviewer` command) to be able to view what's happening.
+2. Use the following script (saved as `render.sh` in this repo):
+	#!/usr/bin/env sh
+	export DISPLAY=":1"
+	Xvfb :1 -screen 0 1920x1080x24 &
+	kwin_x11 &
+	if [[ $1 == "--vnc" ]]; then
+		x11vnc -display :1 -bg -nopw -listen localhost -xkb &
+		DISPLAY=:0 vncviewer localhost:5900 &
+	fi
+	python PyAutoMMDVRRender/main.py --start
+	killall Xvfb
+  Adjust this script according to your configuration, specifically:
+  - The screen resolution should be the same as the monitor MMD normally launches on.
+    MMD will remember its precise geometry, so you don't have to subtract taskbars and such from the screen resolution.
+    The third value is the bit depth, keeping it at 24 should be fine.
+  - Change `kwin_x11` to your WM of choice if needed.
+  - Adjust the path to `main.py`.
+3. If you passed `--vnc` to the script, it will launch TigerVNC, which shows the virtual display.
+   In my experience, messing with the TigerVNC window (such as moving it to a different virtual desktop) breaks the automation.
+   To be safe, just open it, stare at it to see if PyAutoMMDVRRender works fine, then close it. You can always open it again by running `vncviewer localhost:5900`.
+
