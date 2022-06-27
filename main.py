@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 import datetime
 import sys
+from importlib import import_module
 from time import sleep
 from threading import Thread
 import subprocess
 import pyautogui as pag
-import config as cfg
+cfg = None
 
 @dataclass
 class Part:
@@ -15,11 +16,12 @@ class Part:
 	rot_y: int
 	eqr_x: int
 	eqr_y: int
-	angle: int = cfg.NOCHANGE
+	
+	@property
+	def angle(self):
+		return cfg.NOCHANGE
 
-PARTS = [Part(*args) for args in cfg.PARTS]
-
-INTRO = f"""PyAutoMMDVRRender by selplacei
+INTRO = """PyAutoMMDVRRender by selplacei
 This is a simple PyAutoGUI script.
 It doesn't have any advanced capabilities beyond pressing pre-defined buttons.
 Thus, it cannot detect anything, so in order for it to work,
@@ -66,16 +68,19 @@ you must do the following:
 
 This script doesn't attempt to deal with errors, so things may go south.
 To stop the script at any point, move the mouse to any corner of the screen.
-Will render {len(PARTS)} parts
+Will render {} parts
 
 Press ENTER to start the script or Ctrl+C to exit."""
 
 processes = []
+PARTS = None
 
 
 def main():
+	global PARTS
+	PARTS = [Part(*args) for args in cfg.PARTS]
 	if '--start' not in sys.argv:
-		print(INTRO)
+		print(INTRO.format(len(PARTS)))
 		try:
 			input()
 		except KeyboardInterrupt:
@@ -146,8 +151,13 @@ def refocus():
 
 
 def load_mmd():
-	processes.append(subprocess.Popen(['/bin/sh', '-c', cfg.LAUNCH_MMD], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL))
-	sleep(cfg.MMD_LAUNCH_WAIT)
+	processes.append(subprocess.Popen(['/bin/sh', '-c', cfg.LAUNCH_MMD]))
+	out = ''
+	while ' MMD\n' not in out:
+		sleep(5)
+		print(out)
+		out = subprocess.Popen(['wmctrl', '-l'], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].decode('utf-8')
+	sleep(5)
 	refocus()
 	pag.hotkey('alt', 'f')
 	pag.press('o')
@@ -282,4 +292,12 @@ def render(output_suffix, start=None, end=None):
 
 
 if __name__ == '__main__':
-	main()
+	if '--multi' not in sys.argv:
+		import config as cfg
+		main()
+	else:
+		config_module_names = sys.argv[sys.argv.index('--multi')+1:]
+		for i, name in enumerate(config_module_names):
+			print(f'Starting on config {name} ({i + 1}/{len(config_module_names)})')
+			cfg = import_module(name)
+			main()
