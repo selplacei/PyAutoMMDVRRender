@@ -128,6 +128,15 @@ def post_process(n):
 			OUTPUT + PARTS[n][0] + '.mp4',
 			(FINAL_OUTPUT + PARTS[n][0] + '.mp4').replace('R_', 'ALL_')
 		)
+	if len(PARTS) == 10 and n == 9:
+		postprocessing.combine_five_parts(
+			OUTPUT + PARTS[1][0].replace('R_', 'ALL_') + '.mp4',
+			OUTPUT + PARTS[3][0].replace('R_', 'ALL_') + '.mp4',
+			OUTPUT + PARTS[5][0].replace('R_', 'ALL_') + '.mp4',
+			OUTPUT + PARTS[7][0].replace('R_', 'ALL_') + '.mp4',
+			OUTPUT + PARTS[9][0].replace('R_', 'ALL_') + '.mp4',
+			OUTPUT + '.mp4'
+		)
 
 
 split_files = []
