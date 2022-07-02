@@ -3,6 +3,7 @@
 # All functions assume that ffmpeg is installed and ready to use.
 import os
 import subprocess
+from pathlib import Path
 
 import config as cfg
 
@@ -50,6 +51,7 @@ def combine_five_parts(front_fp, top_fp, bottom_fp, left_fp, right_fp, output_fp
 	This function relies on the presence of the ``masks`` directory containing .png files
 	in the same directory as this file (which is the case if you've cloned this repo from GitHub).
 	"""
+	masks_dir = Path(__file__).parent / 'masks'
 	ffmpeg_args = [
 		'ffmpeg',
 		# Input videos
@@ -57,19 +59,19 @@ def combine_five_parts(front_fp, top_fp, bottom_fp, left_fp, right_fp, output_fp
 		# Start of filtergraph
 		'-filter_complex',
 		# Extract the alpha channel from mask inputs
-		'movie=masks/vr180mask_front.png[FrontMaskIn];'
+		f'movie={masks_dir / "vr180mask_front.png"}[FrontMaskIn];'
 		'[FrontMaskIn][0]scale2ref[FrontMaskScaled][Front];'
 		'[FrontMaskScaled]format=pix_fmts=yuva444p,alphaextract[FrontMask];'
 		
-		'movie=masks/vr180mask_t_small.png[TopMaskIn];'
+		f'movie={masks_dir / "vr180mask_t_small.png"}[TopMaskIn];'
 		'[TopMaskIn][1]scale2ref[TopMaskScaled][Top];'
 		'[TopMaskScaled]format=pix_fmts=yuva444p,alphaextract[TopMask];'
 		
-		'movie=masks/vr180mask_b_small.png[BottomMaskIn];'
+		f'movie={masks_dir / "vr180mask_b_small.png"}[BottomMaskIn];'
 		'[BottomMaskIn][2]scale2ref[BottomMaskScaled][Bottom]'
 		';[BottomMaskScaled]format=pix_fmts=yuva444p,alphaextract[BottomMask];'
 		
-		'movie=masks/vr180mask_left.png[LeftMaskIn];'
+		f'movie={masks_dir / "vr180mask_left.png"}[LeftMaskIn];'
 		'[LeftMaskIn][3]scale2ref[LeftMaskScaled][Left];'
 		'[LeftMaskScaled]format=pix_fmts=yuva444p,alphaextract[LeftMask];'
 		# Merge gray masks with input videos
